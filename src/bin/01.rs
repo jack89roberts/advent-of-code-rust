@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 struct Elf {
     food: Vec<u32>,
 }
@@ -28,7 +30,10 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let elves = parse_elves(input);
+    let mut calories: Vec<u32> = elves.iter().map(|e| e.total_calories()).collect_vec();
+    calories.sort();
+    Some(calories[calories.len() - 3..].iter().sum())
 }
 
 fn main() {
@@ -50,6 +55,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 1);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(45000));
     }
 }
