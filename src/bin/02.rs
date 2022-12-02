@@ -1,16 +1,24 @@
 use std::collections::HashMap;
 
+const WIN: u32 = 6;
+const DRAW: u32 = 3;
+const LOSS: u32 = 0;
+
+const ROCK: u32 = 1;
+const PAPER: u32 = 2;
+const SCISSORS: u32 = 3;
+
 pub fn part_one(input: &str) -> Option<u32> {
     let mut scores = HashMap::new();
-    scores.insert(String::from("A X"), 1 + 3); // them Rock, me Rock DRAW
-    scores.insert(String::from("A Y"), 2 + 6); // them Rock, me Paper WIN
-    scores.insert(String::from("A Z"), 3 + 0); // them Rock, me Scissors LOSS
-    scores.insert(String::from("B X"), 1 + 0); // them Paper, me Rock LOSS
-    scores.insert(String::from("B Y"), 2 + 3); // them Paper, me Paper DRAW
-    scores.insert(String::from("B Z"), 3 + 6); // them Paper, me Scissors WIN
-    scores.insert(String::from("C X"), 1 + 6); // them Scissors, me Rock WIN
-    scores.insert(String::from("C Y"), 2 + 0); // them Scissors, me Paper LOSS
-    scores.insert(String::from("C Z"), 3 + 3); // them Scissors, me Scissors DRAW
+    scores.insert(String::from("A X"), ROCK + DRAW); // them Rock, me Rock DRAW
+    scores.insert(String::from("A Y"), PAPER + WIN); // them Rock, me Paper WIN
+    scores.insert(String::from("A Z"), SCISSORS + LOSS); // them Rock, me Scissors LOSS
+    scores.insert(String::from("B X"), ROCK + LOSS); // them Paper, me Rock LOSS
+    scores.insert(String::from("B Y"), PAPER + DRAW); // them Paper, me Paper DRAW
+    scores.insert(String::from("B Z"), SCISSORS + WIN); // them Paper, me Scissors WIN
+    scores.insert(String::from("C X"), ROCK + WIN); // them Scissors, me Rock WIN
+    scores.insert(String::from("C Y"), PAPER + LOSS); // them Scissors, me Paper LOSS
+    scores.insert(String::from("C Z"), SCISSORS + DRAW); // them Scissors, me Scissors DRAW
 
     Some(
         input
@@ -23,15 +31,15 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mut scores = HashMap::new();
-    scores.insert(String::from("A X"), 3 + 0); // LOSE against Rock, play Scissors
-    scores.insert(String::from("A Y"), 1 + 3); // DRAW against Rock, play Rock
-    scores.insert(String::from("A Z"), 2 + 6); // WIN against Rock, play Paper
-    scores.insert(String::from("B X"), 1 + 0); // LOSE against Paper, play Rock
-    scores.insert(String::from("B Y"), 2 + 3); // DRAW against Paper, play Paper
-    scores.insert(String::from("B Z"), 3 + 6); // WIN against Paper, play Scissors
-    scores.insert(String::from("C X"), 2 + 0); // LOSE against Scissors, play Paper
-    scores.insert(String::from("C Y"), 3 + 3); // DRAW against Scissors, play Scissors
-    scores.insert(String::from("C Z"), 1 + 6); // WIN against Scissors, play Rock
+    scores.insert(String::from("A X"), SCISSORS + LOSS); // LOSE against Rock, play Scissors
+    scores.insert(String::from("A Y"), ROCK + DRAW); // DRAW against Rock, play Rock
+    scores.insert(String::from("A Z"), PAPER + WIN); // WIN against Rock, play Paper
+    scores.insert(String::from("B X"), ROCK + LOSS); // LOSE against Paper, play Rock
+    scores.insert(String::from("B Y"), PAPER + DRAW); // DRAW against Paper, play Paper
+    scores.insert(String::from("B Z"), SCISSORS + WIN); // WIN against Paper, play Scissors
+    scores.insert(String::from("C X"), PAPER + LOSS); // LOSE against Scissors, play Paper
+    scores.insert(String::from("C Y"), SCISSORS + DRAW); // DRAW against Scissors, play Scissors
+    scores.insert(String::from("C Z"), ROCK + WIN); // WIN against Scissors, play Rock
 
     Some(
         input
