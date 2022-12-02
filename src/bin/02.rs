@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 pub fn part_one(input: &str) -> Option<u32> {
-
     let mut scores = HashMap::new();
     scores.insert(String::from("A X"), 1 + 3); // them Rock, me Rock DRAW
     scores.insert(String::from("A Y"), 2 + 6); // them Rock, me Paper WIN
@@ -12,9 +11,14 @@ pub fn part_one(input: &str) -> Option<u32> {
     scores.insert(String::from("C X"), 1 + 6); // them Scissors, me Rock WIN
     scores.insert(String::from("C Y"), 2 + 0); // them Scissors, me Paper LOSS
     scores.insert(String::from("C Z"), 3 + 3); // them Scissors, me Scissors DRAW
-    
-    Some(input.trim().split('\n').map(|s| scores.get(s).unwrap()).sum::<u32>())
 
+    Some(
+        input
+            .trim()
+            .split('\n')
+            .map(|s| scores.get(s).unwrap())
+            .sum::<u32>(),
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -28,8 +32,14 @@ pub fn part_two(input: &str) -> Option<u32> {
     scores.insert(String::from("C X"), 2 + 0); // LOSE against Scissors, play Paper
     scores.insert(String::from("C Y"), 3 + 3); // DRAW against Scissors, play Scissors
     scores.insert(String::from("C Z"), 1 + 6); // WIN against Scissors, play Rock
-    
-    Some(input.trim().split('\n').map(|s| scores.get(s).unwrap()).sum::<u32>())
+
+    Some(
+        input
+            .trim()
+            .split('\n')
+            .map(|s| scores.get(s).unwrap())
+            .sum::<u32>(),
+    )
 }
 
 fn main() {
