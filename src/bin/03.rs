@@ -24,7 +24,6 @@ pub fn part_one(input: &str) -> Option<u32> {
             let left: HashSet<char> = sack[..sack.len() / 2].chars().collect();
             let right: HashSet<char> = sack[sack.len() / 2..].chars().collect();
             // first char in left that matches one in right
-            // (clone copies value to avoid a "return reference to local variable" issue)
             *left.intersection(&right).collect::<Vec<&char>>()[0]
         })
         .collect();
