@@ -26,8 +26,7 @@ fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<Instruction>) {
     let mut stacks = Vec::<VecDeque<char>>::new();
     for lin in sections[0].lines() {
         let mut column: usize = 0;
-        let mut cursor: usize = 0;
-        for chr in lin.chars() {
+        for (cursor, chr) in lin.chars().enumerate() {
             if chr.is_numeric() {
                 // last line (column labels)
                 break;
@@ -44,14 +43,10 @@ fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<Instruction>) {
                 // add this crate's character to the stack
                 stacks[column - 1].push_back(chr);
             }
-            cursor += 1;
         }
     }
     // parse instructions
-    let instructions = sections[1]
-        .lines()
-        .map(|instr| parse_instruction(instr))
-        .collect_vec();
+    let instructions = sections[1].lines().map(parse_instruction).collect_vec();
 
     (stacks, instructions)
 }
@@ -67,7 +62,6 @@ pub fn part_one(input: &str) -> Option<String> {
         // then append them to the destination stack
         moved.append(&mut stacks[instr.destination - 1]);
         stacks[instr.destination - 1] = moved;
-
     }
 
     Some(stacks.iter().map(|s| s[0]).collect::<String>())
@@ -86,10 +80,10 @@ pub fn part_two(input: &str) -> Option<String> {
         // then append them to the destination stack
         moved.append(&mut stacks[instr.destination - 1]);
         stacks[instr.destination - 1] = moved;
-
     }
 
-    Some(stacks.iter().map(|s| s[0]).collect::<String>())}
+    Some(stacks.iter().map(|s| s[0]).collect::<String>())
+}
 
 fn main() {
     let input = &advent_of_code::read_file("inputs", 5);
