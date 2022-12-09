@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use std::cmp::Ordering;
 use std::collections::HashSet;
 
 fn is_adjacent(h_pos: (i32, i32), t_pos: (i32, i32)) -> bool {
@@ -12,20 +13,16 @@ fn move_tail(h_pos: (i32, i32), t_pos: (i32, i32)) -> (i32, i32) {
     if !is_adjacent(h_pos, t_pos) {
         (
             t_pos.0
-                + if h_pos.0 > t_pos.0 {
-                    1
-                } else if h_pos.0 < t_pos.0 {
-                    -1
-                } else {
-                    0
+                + match h_pos.0.cmp(&t_pos.0) {
+                    Ordering::Greater => 1,
+                    Ordering::Less => -1,
+                    Ordering::Equal => 0,
                 },
             t_pos.1
-                + if h_pos.1 > t_pos.1 {
-                    1
-                } else if h_pos.1 < t_pos.1 {
-                    -1
-                } else {
-                    0
+                + match h_pos.1.cmp(&t_pos.1) {
+                    Ordering::Greater => 1,
+                    Ordering::Less => -1,
+                    Ordering::Equal => 0,
                 },
         )
     } else {
@@ -33,7 +30,7 @@ fn move_tail(h_pos: (i32, i32), t_pos: (i32, i32)) -> (i32, i32) {
     }
 }
 
-fn move_rope(pos: &mut Vec<(i32, i32)>, dir: &str, n: u32, visited: &mut Vec<HashSet<(i32, i32)>>) {
+fn move_rope(pos: &mut Vec<(i32, i32)>, dir: &str, n: u32, visited: &mut [HashSet<(i32, i32)>]) {
     let delta = match dir {
         "U" => (-1, 0),
         "D" => (1, 0),
@@ -55,7 +52,7 @@ fn count_tail_visited(input: &str, knots: u32) -> u32 {
     let mut pos = vec![(0, 0); knots as usize];
     let mut visited = vec![HashSet::<(i32, i32)>::new(); knots as usize];
     for instr in input.lines() {
-        let parts = instr.split(" ").collect_vec();
+        let parts = instr.split(' ').collect_vec();
         let dir = parts[0];
         let n = parts[1].parse::<u32>().unwrap();
         move_rope(&mut pos, dir, n, &mut visited);
