@@ -41,6 +41,7 @@ fn move_rope(pos: &mut Vec<(i32, i32)>, dir: &str, n: u32, visited: &mut [HashSe
     for _ in 0..n {
         // move head
         pos[0] = (pos[0].0 + delta.0, pos[0].1 + delta.1);
+        // move remaining knots
         for knot in 1..pos.len() {
             (pos[knot].0, pos[knot].1) = move_tail(pos[knot - 1], pos[knot]);
             visited[knot].insert(pos[knot]);
@@ -49,14 +50,17 @@ fn move_rope(pos: &mut Vec<(i32, i32)>, dir: &str, n: u32, visited: &mut [HashSe
 }
 
 fn count_tail_visited(input: &str, knots: u32) -> u32 {
+    // current position of each knot
     let mut pos = vec![(0, 0); knots as usize];
+    // unique positions each knot has visited
     let mut visited = vec![HashSet::<(i32, i32)>::new(); knots as usize];
     for instr in input.lines() {
         let parts = instr.split(' ').collect_vec();
-        let dir = parts[0];
-        let n = parts[1].parse::<u32>().unwrap();
+        let dir = parts[0]; // direction to move
+        let n = parts[1].parse::<u32>().unwrap(); // number of steps to take
         move_rope(&mut pos, dir, n, &mut visited);
     }
+    // number of positions visited by last knot
     visited[visited.len() - 1].len() as u32
 }
 
