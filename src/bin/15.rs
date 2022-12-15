@@ -40,6 +40,20 @@ impl Range {
     fn len(&self) -> u32 {
         (self.max - self.min + 1) as u32
     }
+    fn clip(&self, extent: Range) -> Range {
+        let new_min = match self.min.cmp(&extent.min) {
+            Ordering::Less => extent.min,
+            _ => self.min,
+        };
+        let new_max = match self.max.cmp(&extent.max) {
+            Ordering::Greater => extent.max,
+            _ => self.max,
+        };
+        Range {
+            min: new_min,
+            max: new_max,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq)]
@@ -113,14 +127,7 @@ fn merge_ranges(mut ranges: Vec<Option<Range>>) -> Vec<Option<Range>> {
     merged
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
-    let readings = parse_input(input);
-    let y = match readings.len().cmp(&14) {
-        // decide whether to use y test or y actual
-        Ordering::Equal => 10, // test input
-        _ => 2000000,          // actual input
-    };
-
+fn get_row_ranges(readings: &[Reading], y: i32) -> Vec<Range> {
     // range of cells that each sensor covers on row y
     let mut ranges = readings
         .iter()
@@ -134,7 +141,17 @@ pub fn part_one(input: &str) -> Option<u32> {
         n_ranges = ranges.len();
         ranges = merge_ranges(ranges);
     }
-    let ranges = ranges.iter().map(|r| r.unwrap()).collect_vec();
+    ranges.iter().map(|r| r.unwrap()).collect_vec()
+}
+
+pub fn part_one(input: &str) -> Option<u32> {
+    let readings = parse_input(input);
+    let y = match readings.len().cmp(&14) {
+        // decide whether to use y test or y actual
+        Ordering::Equal => 10, // test input
+        _ => 2000000,          // actual input
+    };
+    let ranges = get_row_ranges(&readings, y);
 
     // check for (unique) beacons at the observed coordinates
     let beacons = readings
@@ -157,8 +174,43 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(range_excluded - seen_beacons)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u64> {
+    let readings = parse_input(input);
+    let extent = match readings.len().cmp(&14) {
+        Ordering::Equal => Range { min: 0, max: 20 }, // test input
+        _ => Range {
+            min: 0,
+            max: 4000000,
+        }, // actual input
+    };
+    for y in extent.min..(extent.max + 1) {
+        // get seen cells (ranges) for this row and clip them to the extent
+        let mut ranges = get_row_ranges(&readings, y)
+            .iter()
+            .map(|r| Some(r.clip(extent)))
+            .collect_vec();
+
+        // combine overlapping ranges
+        let mut n_ranges = 0;
+        while n_ranges != ranges.len() {
+            n_ranges = ranges.len();
+            ranges = merge_ranges(ranges);
+        }
+        if ranges.len() == 2 {
+            // found an unseen spot (2 ranges with a gap between)
+            let left = ranges[0].unwrap();
+            let right = ranges[1].unwrap();
+            let coord = match right.min.cmp(&left.max) {
+                Ordering::Greater => Point { x: left.max + 1, y },
+                _ => Point {
+                    x: right.max + 1,
+                    y,
+                },
+            };
+            return Some(((coord.x as u64) * 4000000) + (coord.y as u64));
+        }
+    }
+    panic!("Didn't find space for beacon!")
 }
 
 fn main() {
@@ -180,6 +232,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 15);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(56000011));
     }
 }
