@@ -60,28 +60,49 @@ fn path_lengths(valves: &HashMap<String, Valve>) -> (Vec<String>, Vec<Vec<u32>>)
     (good_valves, distances)
 }
 
-fn run_p1(
-    flows: &Vec<u32>,
-    distances: &Vec<Vec<u32>>,
-    time: u32,
-    end: u32,
-    path: Vec<usize>,
-    sum: u32,
-    mut best: u32,
+/// recursively compute valve opening order with the best total pressure
+fn run(
+    flows: &Vec<u32>,          // pressure of each valve (when open)
+    distances: &Vec<Vec<u32>>, // distance from each valve to each other valve
+    time: u32,                 // current time
+    end: u32,                  // end time
+    open_valves: Vec<usize>,   // valves that have been turned on so far
+    current_pressure: u32, // if no more valves were turned on, total pressure achieved at end time
+    mut best_pressure: u32, // best total pressure achieved so far
 ) -> u32 {
+    // candidate valve to visit next
     for valve in 0..flows.len() {
-        if !path.contains(&valve) {
-            let new_t = time + distances[path[path.len() - 1]][valve] + 1; // time taken to open valve is distance to it +1
+        // have we already opened this valve?
+        if !open_valves.contains(&valve) {
+            // time taken to open valve is distance to it +1
+            let new_t = time + distances[open_valves[open_valves.len() - 1]][valve] + 1;
+
+            // would opening this valve take us over the time limit?
             if new_t < end {
-                let new_sum = sum + (end - new_t) * flows[valve];
-                let new_best = if new_sum > best { new_sum } else { best };
-                let mut new_path = path.clone();
-                new_path.push(valve);
-                best = run_p1(flows, distances, new_t, end, new_path, new_sum, new_best);
+                // add pressure released in remaining time from opening this valve, and check if this is a new best
+                let new_pressure = current_pressure + (end - new_t) * flows[valve];
+                let new_best = if new_pressure > best_pressure {
+                    new_pressure
+                } else {
+                    best_pressure
+                };
+
+                // run again with updated values (after adding new valve to the list of opened ones)
+                let mut new_valves = open_valves.clone();
+                new_valves.push(valve);
+                best_pressure = run(
+                    flows,
+                    distances,
+                    new_t,
+                    end,
+                    new_valves,
+                    new_pressure,
+                    new_best,
+                );
             }
         }
     }
-    best
+    best_pressure
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -93,7 +114,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         .collect_vec();
     let start_idx = good_valves.iter().position(|v| v == "AA").unwrap();
 
-    let best_total = run_p1(&flows, &distances, 0, 30, vec![start_idx], 0, 0);
+    let best_total = run(&flows, &distances, 0, 30, vec![start_idx], 0, 0);
     Some(best_total)
 }
 
