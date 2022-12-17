@@ -106,6 +106,9 @@ fn run(
 }
 
 /// recursively compute valve opening order with the best total pressure
+/// nansty copy/pasete of p1 with additionanl loop over current position/time for
+/// one of N agents
+/// Slow - took >2hrs to run.
 fn run_p2(
     flows: &Vec<u32>,          // pressure of each valve (when open)
     distances: &Vec<Vec<u32>>, // distance from each valve to each other valve
