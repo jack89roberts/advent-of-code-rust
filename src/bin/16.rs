@@ -109,13 +109,14 @@ fn run(
 /// nansty copy/pasete of p1 with additionanl loop over current position/time for
 /// one of N agents
 /// Slow - took >2hrs to run.
+#[allow(clippy::too_many_arguments)]
 fn run_p2(
-    flows: &Vec<u32>,          // pressure of each valve (when open)
-    distances: &Vec<Vec<u32>>, // distance from each valve to each other valve
-    times: Vec<u32>,           // current time for each agent
-    positions: Vec<usize>,     // most recently visited valve for each agent
-    end: u32,                  // end time
-    remaining_valves: Vec<usize>,   // valves that have NOT been turned on so far
+    flows: &Vec<u32>,             // pressure of each valve (when open)
+    distances: &Vec<Vec<u32>>,    // distance from each valve to each other valve
+    times: Vec<u32>,              // current time for each agent
+    positions: Vec<usize>,        // most recently visited valve for each agent
+    end: u32,                     // end time
+    remaining_valves: Vec<usize>, // valves that have NOT been turned on so far
     current_pressure: u32, // if no more valves were turned on, total pressure achieved at end time
     mut best_pressure: u32, // best total pressure achieved so far
 ) -> u32 {
